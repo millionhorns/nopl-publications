@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Publications | Neuromuscular & Occupational Performance Laboratory | Texas Tech University</title>
+<meta name="description" content="Peer-reviewed publications from the Neuromuscular and Occupational Performance Laboratory (NOPL) at Texas Tech University, directed by Dr. Jacob Mota.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+  :root { --red:#CC0000; --dark:#1a1a1a; --mid:#4a4a4a; --light:#f5f3ef; --rule:#d8d2c8; --ip:#7a5c00; --ip-bg:#fdf8ec; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html, body { height:auto; overflow-y:auto; }
+  body { font-family:'DM Sans',sans-serif; background:var(--light); color:var(--dark); font-size:15px; line-height:1.6; }
+  header { background:var(--dark); color:white; padding:48px 40px 40px; border-bottom:4px solid var(--red); }
+  .header-label { font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:#999; margin-bottom:10px; }
+  header h1 { font-family:'EB Garamond',serif; font-size:clamp(26px,4vw,38px); font-weight:500; line-height:1.2; margin-bottom:6px; }
+  header h1 span { color:var(--red); }
+  .header-meta { font-size:13px; color:#888; margin-top:10px; }
+  .header-meta a { color:#aaa; }
+  .stats { display:flex; background:white; border-bottom:1px solid var(--rule); }
+  .stat { padding:18px 32px; border-right:1px solid var(--rule); text-align:center; }
+  .stat-num { font-family:'EB Garamond',serif; font-size:28px; font-weight:600; color:var(--red); display:block; line-height:1; }
+  .stat-label { font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--mid); margin-top:4px; display:block; }
+  main { max-width:900px; margin:0 auto; padding:48px 32px 80px; }
+  .section-header { display:flex; align-items:baseline; gap:16px; margin-bottom:20px; padding-bottom:10px; border-bottom:2px solid var(--dark); }
+  .section-header h2 { font-family:'EB Garamond',serif; font-size:22px; font-weight:500; }
+  .section-count { font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--mid); }
+  .year-group { margin-bottom:48px; }
+  .year-header { display:flex; align-items:center; gap:16px; margin-bottom:16px; }
+  .year-label { font-family:'EB Garamond',serif; font-size:32px; font-weight:400; color:var(--red); line-height:1; min-width:60px; }
+  .year-line { flex:1; height:1px; background:var(--rule); }
+  .year-count { font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:#aaa; }
+  .paper { display:grid; grid-template-columns:28px 1fr; gap:0 14px; padding:14px 0; border-bottom:1px solid var(--rule); }
+  .paper:last-child { border-bottom:none; }
+  .paper-num { font-family:'EB Garamond',serif; font-size:13px; color:#bbb; padding-top:2px; text-align:right; }
+  .paper-title { font-family:'EB Garamond',serif; font-size:16px; font-weight:500; line-height:1.4; color:var(--dark); margin-bottom:4px; }
+  .paper-authors { font-size:13px; color:var(--mid); line-height:1.5; margin-bottom:4px; }
+  .mota { font-weight:500; color:var(--dark); }
+  .paper-journal { font-size:13px; color:var(--mid); }
+  .paper-journal em { font-family:'EB Garamond',serif; font-style:italic; color:var(--dark); }
+  .paper-links { display:inline-flex; gap:8px; margin-top:6px; }
+  .paper-links a { font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--red); text-decoration:none; border:1px solid var(--red); padding:2px 8px; border-radius:2px; }
+  .paper-links a:hover { background:var(--red); color:white; }
+  .badge { display:inline-block; font-size:10px; letter-spacing:.1em; text-transform:uppercase; background:var(--ip-bg); color:var(--ip); border:1px solid #e8d68a; padding:2px 7px; border-radius:2px; margin-left:8px; vertical-align:middle; }
+  .paper-note { font-size:12px; color:var(--ip); margin-top:4px; }
+  .footnotes { margin-top:48px; padding-top:24px; border-top:1px solid var(--rule); font-size:12px; color:#888; line-height:1.8; }
+  footer { background:var(--dark); color:#666; text-align:center; padding:24px; font-size:12px; }
+  footer a { color:#999; }
+  @media(max-width:600px){ header{padding:32px 20px;} main{padding:32px 20px 60px;} .stats{flex-wrap:wrap;} .stat{flex:1 1 50%;} .paper{grid-template-columns:24px 1fr;} }
+</style>
+</head>
+<body>
+
+<script>
+// ============================================================
+// PUBLICATIONS DATA
+// To add a new paper, copy one entry below and paste it at the
+// TOP of the relevant section. That's all you need to do.
+//
+// Fields:
+//   status   — "inpress"  OR  a 4-digit year e.g. "2026"
+//   accepted — (inpress only) acceptance date as a string
+//   title    — full paper title
+//   authors  — author list; write [MOTA] where Mota, J.A. appears
+//   journal  — journal name
+//   volume   — volume/issue/pages (optional)
+//   pmid     — PubMed ID number only, no URL (optional)
+//   doi      — full DOI URL, used only if no pmid (optional)
+//   note     — award or distinction line (optional)
+// ============================================================
+
+const PUBS = [
+
+  // ── IN PRESS — newest accepted date first ────────────────
+  { status:"inpress", accepted:"March 19, 2026",
+    title:"Contributions from Impulse and Limb-Target Regulation to Schmidt's Linear Speed-Accuracy Tradeoff",
+    authors:"Blinch, J., Trovinger, C., Opdenaker, J., Clark, A.R., Gooch, C.E., Pankajkumar Joshi, H., Harry, J.R., & [MOTA]",
+    journal:"Journal of Motor Behavior" },
+
+  { status:"inpress", accepted:"February 16, 2026",
+    title:"Upper and Lower Body Isometric Strength Adaptations Following Two Consecutive 12-Week Resistance Training and Conditioning Programs in Male and Female Air Force ROTC Cadets: The Supporting Tactical Athletes for Readiness (STAR) Program",
+    authors:"Brojanac, A.P., Haynes, H., [MOTA], Puleali'I, S., Schwarz, A.V., Johnson, M.F., Kaylor, M.G., Addison, A., Young, T., Klubertanz, M., Patton, M., & Graybeal, A.J.",
+    journal:"Journal of Strength and Conditioning Research" },
+
+  { status:"inpress", accepted:"February 11, 2026",
+    title:"Changes in Depression, Eating, Sleep, and Emotion Regulation in Air Force ROTC Cadets After the 12-Week STAR Training Program",
+    authors:"Schwarz, A.V., Haynes, H., Puleali'I, S., [MOTA], Johnson, M.F., Kaylor, M.G., Addison, A., Braun-Trocchio, R., & Graybeal, A.J.",
+    journal:"Translational Journal of the American College of Sports Medicine" },
+
+  { status:"inpress", accepted:"February 2, 2026",
+    title:"Do Cardiovascular Disease Risk Indices and Physical Fitness Differ Based on the Body Roundness Index Among First Responders?",
+    authors:"Gonzalez, D.E., Loffler, A., Doyle, B.P., Tebbetts, J.D., Conner, M.J., Newman, B., [MOTA], Dawes, J.J., Mann, J.B., & Martin, S.E.",
+    journal:"Journal of Occupational and Environmental Medicine" },
+
+  { status:"inpress", accepted:"January 12, 2026",
+    title:"The Neuromuscular Response to Eccentric Exercise-Induced Muscle Damage in Younger and Older Females",
+    authors:"Southall K.E., Levitt D.E., Palmer T.B., Wohlgemuth K.J., & [MOTA]",
+    journal:"International Journal of Exercise Science" },
+
+  { status:"inpress", accepted:"December 6, 2025",
+    title:"Unfit to Serve? Implications of Obesity in the United States Military",
+    authors:"Florez, C.M., Albract-Schulte, K., Levitt, D.E., [MOTA], & Tinsley, G.M.",
+    journal:"Military Medicine" },
+
+  { status:"inpress", accepted:"December 3, 2025",
+    title:"Comparing Standard and Advanced Lipid Profiles in Law Enforcement Officers: A Pilot Study on the Links to Fitness, Body Composition, and Cardiometabolic Risk",
+    authors:"Johnson, S.E., Gil, A., Conner, M.J., [MOTA], Dawes, J.J., Martin, S.E., & Gonzalez, D.E.",
+    journal:"Journal of Occupational and Environmental Medicine" },
+
+  { status:"inpress", accepted:"October 15, 2025",
+    title:"Single vs. Whole Muscle Group Assessments: Does the Specific Muscle Influence Its Association with Performance?",
+    authors:"Velasquez, C.V., Wohlgemuth K.J., Hare, M.M., Southall K.E., & [MOTA]",
+    journal:"Topics in Exercise and Kinesiology" },
+
+  { status:"inpress", accepted:"October 1, 2025",
+    title:"SHIFT-48: Schedule and Health Improvements for Firefighters Transitioning to 48/96",
+    authors:"Conner, M.J., Burnham, R., Jesko, A., Wohlgemuth, K.J., Miller, P., Boles, M., & [MOTA]",
+    journal:"Journal of Occupational and Environmental Medicine" },
+
+  { status:"inpress", accepted:"September 10, 2025",
+    title:"Occupational Health Disparities: A Profile of Firefighters and Police Officers",
+    authors:"Wohlgemuth, K.J., Conner, M.J., Burnham, E., & [MOTA]",
+    journal:"Journal of Strength and Conditioning Research" },
+
+  // ── 2025 ────────────────────────────────────────────────
+  { status:"2025",
+    title:"Using Repeated Vertical Jumps to Investigate the Relationship between Muscular Endurance and Balance",
+    authors:"Stewart, M.J., Wohlgemuth, K.J., Southall, K.E., Velasquez, C.M., Park, S., Hite, M., Hare, M.H., [MOTA], & Harry, J.R.",
+    journal:"Translational Journal of the American College of Sports Medicine", volume:"10(4): e000327" },
+
+  { status:"2025",
+    title:"One Job, One Standard: How the Revised NFPA Standard 1580 Alters Firefighter Fit for Duty Status Across Age",
+    authors:"Miller, P.E., Conner, M.J., Burnham, R.A., Wohlgemuth K.J., & [MOTA]",
+    journal:"Journal of Applied Physiology, Nutrition, and Metabolism", volume:"50:1–9", pmid:"40803002" },
+
+  { status:"2025",
+    title:"Reference Values for Body Composition, Graded Exercise Testing, Hemodynamics, and Pulmonary Function in Male and Female Firefighters",
+    authors:"Tinsley, G.M., [MOTA], Conner, M.J., Jesko, A., Wohlgemuth, K.J., & Rodriguez, C.",
+    journal:"Journal of Occupational and Environmental Medicine", volume:"67(9): 723–731", pmid:"40358999" },
+
+  { status:"2025",
+    title:"Impact of Age and Years in the Fire Service on Firefighter Health and Physical Performance Outcomes",
+    authors:"Chun, J., Conner, M.J., [MOTA], Newman, B., Dawes, J.J., Martin, S.E., & Gonzalez, D.E.",
+    journal:"Healthcare", volume:"13(16), 1946", pmid:"40868561" },
+
+  { status:"2025",
+    title:"Leg Fat-Free Mass and Inter-limb Leg Fat-Free Mass Asymmetry Comparisons between Bioelectrical Impedance Analysis and Dual-energy X-ray Absorptiometry in Career Firefighters",
+    authors:"Buoncristiani, N.A., Gerstner, G.R., Laffan, M.R., Trivisonno, A.J., Giuliani-Dewig, H.K., [MOTA], Schmitz, A.N., Smith-Ryan, A.E., & Ryan, E.D.",
+    journal:"Applied Physiology Nutrition and Metabolism", volume:"1(50): 1–6", pmid:"40503666" },
+
+  { status:"2025",
+    title:"Influence of Structured Medium- and Long-Chain Triglycerides on Muscular Recovery Following Damaging Resistance Exercise",
+    authors:"Velasquez, C.M., Rodriguez, C., Wohlgemuth, K.J., Tinsley, G.M., & [MOTA]",
+    journal:"Nutrients", volume:"17(10), 1604", pmid:"40431345" },
+
+  { status:"2025",
+    title:"Sleep Hygiene within the Fire Service: A Narrative Review",
+    authors:"Hare, M.M., Wohlgemuth, K.J., & [MOTA]",
+    journal:"Strength and Conditioning Journal", volume:"47(2): 215–223", doi:"https://doi.org/10.1519/SSC.0000000000000871" },
+
+  { status:"2025",
+    title:"Work-related Fatigue: Relationship between Perceived and Performance Fatigability in Career Firefighters",
+    authors:"Schmitz, A.N., Giuliani-Dewig, H.K., Laffan, M.R., Trivisonno, A.J., Gerstner, G.R., [MOTA], Buoncristiani, N.A., & Ryan, E.D.",
+    journal:"Journal of Occupational and Environmental Medicine", volume:"67(2): 110–114", pmid:"39805122" },
+
+  { status:"2025",
+    title:"Alcohol Misuse Increases Cardiometabolic Risk among Firefighters",
+    authors:"Levitt, D.E., Wohlgemuth, K.J., Burnham, E.F., Conner, M.J., Collier, J.J., & [MOTA]",
+    journal:"Alcohol: Clinical and Experimental Research", volume:"49(2): 392–406", pmid:"39746845" },
+
+  // ── 2024 ────────────────────────────────────────────────
+  { status:"2024",
+    title:"Reliability and Validity of Muscle Size and Quality Analysis Techniques",
+    authors:"Hare, M.M., Wohlgemuth K.J., Blue, M.N.M., & [MOTA]",
+    journal:"Ultrasound in Medicine and Biology", volume:"50: 1188–1193", pmid:"38697896" },
+
+  { status:"2024",
+    title:"Skeletal Muscle Estimation: A Review of Non-Invasive Techniques and Their Applications",
+    authors:"Rodriguez, C., [MOTA], Palmer, T.B., Heymsfield, S.B., & Tinsley, G.M.",
+    journal:"Clinical Physiology and Functional Imaging", volume:"44(4): 261–284", pmid:"38426639" },
+
+  { status:"2024",
+    title:"Strategies for Improving Firefighter Health On-Shift: A Review",
+    authors:"Wohlgemuth, K.J., Conner, M.J., Tinsley, G.M., Palmer, T.B., & [MOTA]",
+    journal:"Journal of Functional Morphology and Kinesiology", volume:"9(2), 105", pmid:"38921641" },
+
+  { status:"2024",
+    title:"Ultrasound DICOM Renamer: A MATLAB Graphical User Interface for Workflow Improvement for DICOM Ultrasound Renaming",
+    authors:"Freeborn, T.J. & [MOTA]",
+    journal:"SoftwareX", volume:"26: 101743", doi:"https://doi.org/10.1016/j.softx.2024.101743" },
+
+  { status:"2024",
+    title:"Characteristics of Slow and Fast Performers on a Firefighter Air Consumption Test",
+    authors:"Wohlgemuth, K.J., Jesko, A., Frost, V., Conner, M.J., & [MOTA]",
+    journal:"Applied Ergonomics", volume:"118: 104262", pmid:"38430846" },
+
+  { status:"2024",
+    title:"The Impact of Inter-limb Leg Lean Tissue Mass Asymmetry on Stair Climb Performance in Career Firefighters",
+    authors:"Buoncristiani, N.A., Gerstner, G.R., Laffan, M.R., Trivisonno, A.J., [MOTA], Giuliani-Dewig, H.K., & Ryan, E.D.",
+    journal:"Ergonomics", volume:"1–7", pmid:"38465900" },
+
+  { status:"2024",
+    title:"Can Segmental Bioelectrical Impedance Be Used as a Measure of Muscle Quality?",
+    authors:"Wohlgemuth K.J., Freeborn T.J., Southall, K.E., Hare, M.M., & [MOTA]",
+    journal:"Medical Engineering and Physics", volume:"124: 104103", pmid:"38418031" },
+
+  { status:"2024",
+    title:"Climbing the Ranks: A Study of Firefighter Health Disparities",
+    authors:"Hare, M.H., Wohlgemuth K.J., Jesko, A., Conner, M.J., Frost, V., & [MOTA]",
+    journal:"Healthcare", volume:"12(2): 227", pmid:"38255114" },
+
+  // ── 2023 ────────────────────────────────────────────────
+  { status:"2023",
+    title:"Impact of Age on Affective Responses Following Worksite Resistance Exercise in Career Firefighters",
+    authors:"Gerstner, G.R., Trivisonno, A.J., Laffan, M.R., Giuliani-Dewig, H.K., [MOTA], Register-Mihalik, J., & Ryan, E.D.",
+    journal:"Medicine & Science in Sport & Exercise", volume:"55(12): 2263–2270", pmid:"37443454" },
+
+  { status:"2023",
+    title:"Overexertion and Heat Stress in the Fire Service: A New Conceptual Framework",
+    authors:"Wohlgemuth, K.J., Sekiguchi, Y., & [MOTA]",
+    journal:"American Journal of Industrial Medicine", volume:"66(8): 705–709", pmid:"37062940" },
+
+  { status:"2023",
+    title:"The Time Course of Health, Fitness, and Occupational Performance Changes in Recruits Across a Fire Academy",
+    authors:"Wohlgemuth, K.J., Gerstner, G.R., Giuliani-Dewig, H.K., [MOTA], Smith-Ryan, A.E., & Ryan, E.D.",
+    journal:"Medicine & Science in Sport & Exercise", volume:"55(6): 1087–1096", pmid:"36728567" },
+
+  { status:"2023",
+    title:"Test-Retest Reliability and Minimum Difference Values of a Novel and Portable Upright Row Strength Assessment in Probation Officers",
+    authors:"Buoncristiani, N.A., [MOTA], Gerstner, G.R., Giuliani-Dewig, H.K., & Ryan, E.D.",
+    journal:"International Journal of Environmental Research and Public Health", volume:"20: 2236", pmid:"36767603" },
+
+  { status:"2023",
+    title:"Acute Responses to High-Intensity Back Squats with Bilateral Blood Flow Restriction",
+    authors:"Hornikel, B., Saffold, K.S., Esco, M.R., [MOTA], Fedewa, M.V., Wind, S.A., Adams, T.L., & Winchester, L.J.",
+    journal:"International Journal of Environmental Research and Public Health", volume:"20(4), 3555" },
+
+  { status:"2023",
+    title:"Acute Blood Flow Responses to Varying Blood Flow Restriction Pressures in the Lower Limbs",
+    authors:"Hornikel, B., Saffold, K.S., [MOTA], Esco, M.R., Fedewa M.V., Wind, S.A., & Winchester, L.J.",
+    journal:"International Journal of Exercise Science", pmid:"37114195" },
+
+  { status:"2023",
+    title:"Linear Mixed Effect Modeling in Kinesiology: A Brief Tutorial in R",
+    authors:"[MOTA], Rajeb, M., Man, K., & Wohlgemuth, K.J.",
+    journal:"Biomedical Journal of Scientific & Technical Research", volume:"49(3)", doi:"https://doi.org/10.26717/BJSTR.2023.49.007794" },
+
+  // ── 2022 ────────────────────────────────────────────────
+  { status:"2022",
+    title:"Examining the Usability of Workload Monitoring in Firefighter Recruits",
+    authors:"Giuliani-Dewig, H.K., Gerstner, G.R., [MOTA], & Ryan, E.D.",
+    journal:"Journal of Occupational and Environmental Medicine", volume:"64(10): 865–868", pmid:"35680642" },
+
+  { status:"2022",
+    title:"Reliability and Accuracy of Ultrasound Image Analyses Completed Manually versus an Automated Tool",
+    authors:"Wohlgemuth, K.J., Blue, M.N.M., & [MOTA]",
+    journal:"PeerJ", volume:"10: e13609", pmid:"35729910" },
+
+  { status:"2022",
+    title:"The Impact of Repeated Bouts of Shiftwork on Rapid Strength and Reaction Time in Career Firefighters",
+    authors:"Gerstner, G.R., [MOTA], Giuliani, H.K., Weaver, M.A., Shea, N.W., & Ryan, E.D.",
+    journal:"Ergonomics", volume:"35(8): 1086–1094", pmid:"34882513" },
+
+  { status:"2022",
+    title:"Effects of Strength and Conditioning on Maximal Isometric Strength, Motor Unit Behavior, and Concentric Isokinetic Peak Torque in Middle-School Boys",
+    authors:"MacLennan R.J., [MOTA], Thompson, B.J., & Stock, M.S.",
+    journal:"Journal of Strength and Conditioning Research", volume:"36(5): 1318–1326", pmid:"33780394" },
+
+  { status:"2022",
+    title:"Segmental Bioelectrical Impedance Spectroscopy: A Novel Field Assessment of Muscle Size and Quality in Normal Weight and Obese Older Men",
+    authors:"Arieta, L.R., Giuliani-Dewig, H.K., Gerstner, G.R., [MOTA], & Ryan, E.D.",
+    journal:"Journals of Gerontology Series A: Biological Sciences", volume:"162: 111745", pmid:"35192915" },
+
+  { status:"2022",
+    title:"Neuromuscular Determinants of Simulated Occupational Performance in Career Firefighters",
+    authors:"Ryan, E.D., McKenna, M.R., Trivisonno, A.J., Gerstner, G.R., [MOTA], Giuliani, H.K., & Pietrosimone, B.G.",
+    journal:"Applied Ergonomics", volume:"98: 103555", pmid:"34425517" },
+
+  { status:"2022",
+    title:"Factors Influencing Probation Officers' Willingness to Perform a Physical Employment Standard",
+    authors:"Giuliani, H.K., Kerr, Z.Y., Register-Mihalik, J.K., [MOTA], & Ryan, E.D.",
+    journal:"Medicine and Science in Sports and Exercise", volume:"54(2): 330–306", pmid:"34559720" },
+
+  // ── 2021 ────────────────────────────────────────────────
+  { status:"2021",
+    title:"The Neuromuscular Determinants of Normalized Early Phase Rate of Force Development in Older Men",
+    authors:"Magrini, M.A., Colquhoun, R.J., Ferrell, M.C., Fleming, S.R., Poidomani N., [MOTA], Jenkins, N.D.M., & DeFreitas, J.M.",
+    journal:"Journal of Motor Behavior", volume:"422–428", pmid:"34763617" },
+
+  { status:"2021",
+    title:"Measuring Muscle Quality: Associations between Echo Intensity and Normalized Strength and Power",
+    authors:"Giuliani, H.K., McKenna, M.R., Trivisonno, A.J., Arieta, L.R., Gerstner, G.R., [MOTA], & Ryan, E.D.",
+    journal:"Physiological Measurement", volume:"42: 03NT01", pmid:"33636708" },
+
+  { status:"2021",
+    title:"The Influence of Age on the Recovery from Worksite Resistance Exercise in Career Firefighters",
+    authors:"Trivisonno, A., Laffan, M.R., Giuliani, H.G., [MOTA], Gerstner, G.R., Smith-Ryan, A.E., & Ryan, E.D.",
+    journal:"Experimental Gerontology", volume:"111467", pmid:"34237392" },
+
+  { status:"2021",
+    title:"The Acute Effects of a Multi-Ingredient Herbal Supplement on Performance Fatigability: A Double-Blind, Randomized, and Placebo-Controlled Trial",
+    authors:"Ryan, E.D., Gerstner, G.R., [MOTA], Trexler, E.T., Giuliani, H.K., Blue, M.N.M., Hirsch, K.R., & Smith-Ryan, A.E.",
+    journal:"Journal of Dietary Supplements", pmid:"32723193" },
+
+  // ── 2020 ────────────────────────────────────────────────
+  { status:"2020",
+    title:"The Influence of Age and Obesity-Altered Muscle Quality on Muscular Dimensional Changes: Impact on Strength and Function",
+    authors:"Giuliani, H.K., Shea, N.W., Gerstner, G.R., [MOTA], Blackburn, J.T., & Ryan, E.D.",
+    journal:"Journal of Gerontology: Biological Sciences", volume:"75(12): 2286–2294", pmid:"32822467" },
+
+  { status:"2020",
+    title:"Vastus Lateralis Motor Unit Recruitment Thresholds are Compressed Towards Lower Forces in Older Men",
+    authors:"Girts, R.M., [MOTA], Harmon, K.K., MacLennan, R.J., & Stock, M.S.",
+    journal:"Journal of Frailty & Aging", volume:"9(4): 191–196", pmid:"32996555" },
+
+  { status:"2020",
+    title:"Compensatory Adjustments in Motor Unit Behavior During Fatigue Differ for Younger versus Older Men",
+    authors:"[MOTA], Kwon, D.P., Kennedy, M., Sobolewski, E.J., Gonzales, J.U., Kim, Y., & Stock, M.S.",
+    journal:"Aging Clinical and Experimental Research", volume:"32: 2259–2269", pmid:"31898169" },
+
+  { status:"2020",
+    title:"Influence of Demographic Characteristics and Muscle Strength on the Occupational Fatigue Exhaustion Recovery Scale in Career Firefighters",
+    authors:"Giuliani, H.K., Gerstner, G.R., [MOTA], & Ryan, E.D.",
+    journal:"Journal of Occupational and Environmental Medicine", volume:"62(3): 223–226", pmid:"31895733" },
+
+  { status:"2020",
+    title:"Nutritional Periodization: Applications for the Strength Athlete",
+    authors:"[MOTA], Nuckols, G., & Smith-Ryan, A.E.",
+    journal:"Strength and Conditioning Journal", volume:"41(5): 69–78" },
+
+  // ── 2019 ────────────────────────────────────────────────
+  { status:"2019",
+    title:"Obesity Prevalence and Musculoskeletal Injury History in Probation Officers",
+    authors:"[MOTA], Kerr, Z.Y., Gerstner, G.R., Giuliani, H.K., & Ryan, E.D.",
+    journal:"Medicine & Science in Sports & Exercise", volume:"51(9): 1860–1865", pmid:"30925576" },
+
+  { status:"2019",
+    title:"Age-Related Changes in the Passive Properties of the Plantarflexors: Influence of Tissue Size and Quality",
+    authors:"Giuliani, H.K., Gerstner, G.R., [MOTA], & Ryan, E.D.",
+    journal:"Clinical Biomechanics", volume:"68: 53–57", pmid:"31158590" },
+
+  { status:"2019",
+    title:"Motor Unit Properties of Rapid Force Development During Explosive Contractions",
+    authors:"[MOTA], Gerstner, G.R., & Giuliani, H.K.",
+    journal:"Journal of Physiology", volume:"597(9): 2335–2336", pmid:"30919962" },
+
+  // ── 2018 ────────────────────────────────────────────────
+  { status:"2018",
+    title:"Influence of Neuromuscular Function on Functional Balance Performance in Firefighters",
+    authors:"[MOTA], Barnette, T.J., Gerstner, G.R., Giuliani H.K., Tweedell, A.J., Kleinberg, C.R., Thompson, B.J., Pietrosimone, B., & Ryan, E.D.",
+    journal:"Scientific Reports", volume:"8(1): 15328", pmid:"30333503" },
+
+  { status:"2018",
+    title:"Additional Insight into Biarticular Muscle Function: The Influence of Hip Flexor Fatigue on Rectus Femoris Activity at the Knee",
+    authors:"Carr, J.C., Stock, M.S., Hernandez, J.M., Ortegon, J.R., & [MOTA]",
+    journal:"Journal of Electromyography and Kinesiology", volume:"42: 36–43", pmid:"29940493" },
+
+  { status:"2018",
+    title:"The Influence of Muscle Quality on the Differences in Strength from Slow to Fast Velocities in Career Firefighters",
+    authors:"Gerstner, G.R., Giuliani, H.K., [MOTA], & Ryan, E.D.",
+    journal:"Journal of Strength and Conditioning Research", volume:"32(10): 2982–2986", pmid:"29979280" },
+
+  { status:"2018",
+    title:"The Influence of Habitual Protein Intake on Body Composition and Muscular Strength in Career Firefighters",
+    authors:"Hirsch, K.R., Tweedell, A.J., Kleinberg, C.R., Gerstner, G.R., Barnette, T.J., [MOTA], Smith-Ryan, A.E., & Ryan, E.D.",
+    journal:"Journal of the American College of Nutrition", volume:"37(7): 620–626", pmid:"29702029" },
+
+  { status:"2018",
+    title:"The Rate of Velocity Development Associates with Muscle Echo Intensity, but not Muscle Cross-Sectional Area in Older Men",
+    authors:"[MOTA], Giuliani, H.K., Gerstner, G.R., & Ryan, E.D.",
+    journal:"Aging Clinical and Experimental Research", volume:"30(7): 861–865", pmid:"28936628" },
+
+  // ── 2017 ────────────────────────────────────────────────
+  { status:"2017",
+    title:"Vastus Lateralis and Rectus Femoris Echo Intensity Fail to Reflect Knee Extensor Specific Tension in Middle-School Boys",
+    authors:"[MOTA], Stock, M.S., & Thompson, B.J.",
+    journal:"Physiological Measurement", volume:"38: 1529–1541", pmid:"28607221" },
+
+  { status:"2017",
+    title:"Shifts in the Relationship between Motor Unit Recruitment Thresholds versus Derecruitment Thresholds During Fatigue",
+    authors:"Stock, M.S. & [MOTA]",
+    journal:"Medical Engineering & Physics", volume:"50: 35–41", pmid:"28918955" },
+
+  { status:"2017",
+    title:"Age-Related Reductions in Muscle Quality Influence the Relative Differences in Strength and Power",
+    authors:"Gerstner, G.R., Giuliani, H.K., [MOTA], & Ryan, E.D.",
+    journal:"Experimental Gerontology", volume:"99: 27–34", pmid:"28927901" },
+
+  { status:"2017",
+    title:"Adaptations Associated with an After-School Strength and Conditioning Program in Middle-School Aged Boys: A Quasi-Experimental Design",
+    authors:"Thompson, B.J., Stock, M.S., [MOTA], Drusch, A.S., DeFranco, R.N., Cook, T.R., & Hamm, M.A.",
+    journal:"Journal of Strength and Conditioning Research", volume:"31(10): 2840–2851", pmid:"28933713" },
+
+  { status:"2017",
+    title:"Rectus Femoris Echo Intensity Correlates with Muscle Strength, but not Endurance, in Younger and Older Men",
+    authors:"[MOTA] & Stock, M.S.",
+    journal:"Ultrasound in Medicine and Biology", volume:"43(8): 1651–1657", pmid:"28533003" },
+
+  { status:"2017",
+    title:"Echo Intensity and Muscle Thickness as Predictors of Athleticism and Isometric Strength in Middle-School Boys",
+    authors:"Stock, M.S., [MOTA], Hernandez, J.H., & Thompson, B.J.",
+    journal:"Muscle and Nerve", volume:"55(5): 685–692", pmid:"27592862" },
+
+  { status:"2017",
+    title:"The Time Course of Short-Term Hypertrophy in the Absence of Eccentric Muscle Damage",
+    authors:"Stock, M.S., [MOTA], DeFranco, R.N., Grue, K.A., Jacobo, A.U., Chung, E., Moon, J.R., DeFreitas, J.M., & Beck, T.W.",
+    journal:"European Journal of Applied Physiology", volume:"117(5): 989–1004", pmid:"28321637" },
+
+  // ── 2016 ────────────────────────────────────────────────
+  { status:"2016",
+    title:"Muscle Group Specific Changes in the Electromechanical Delay Following Short-Term Resistance Training",
+    authors:"Stock, M.S., Olinghouse, K.D., [MOTA], Drusch, A.S., & Thompson, B.J.",
+    journal:"Journal of Science and Medicine in Sport", volume:"19: 761–765", pmid:"26626336" },
+
+  { status:"2016",
+    title:"Evidence of Muscular Adaptations within Four Weeks of Barbell Training in Women",
+    authors:"Stock, M.S., Olinghouse, K.D., Drusch, A.S., [MOTA], Hernandez, J.M., Akalonu, C.C., & Thompson, B.J.",
+    journal:"Human Movement Science", volume:"45: 7–22", pmid:"26583966" },
+
+  // ── 2015 ────────────────────────────────────────────────
+  { status:"2015",
+    title:"Influence of Hamstring Fatigue on the Estimated Percentage of Fast-Twitch Muscle Fibers for the Vastus Lateralis",
+    authors:"[MOTA], Stock, M.S., Carrillo, E.C., Olinghouse, K.D., Drusch, A.S., & Thompson, B.J.",
+    journal:"Journal of Strength and Conditioning Research", volume:"29(12): 3509–3516", pmid:"26219026" },
+
+  { status:"2015",
+    title:"Barbell Deadlift Training Increases the Rate of Torque Development and Vertical Jump Performance in Novices",
+    authors:"Thompson, B.J., Stock, M.S., Shields, J.E., Luera, M.J., Munayer, I.K., [MOTA], Carrillo, E.C., & Olinghouse, K.D.",
+    journal:"Journal of Strength and Conditioning Research", volume:"29(1): 1–10", pmid:"25226322",
+    note:"★ NSCA featured article of the month, January 2015 · Most downloaded JSCR manuscript 2015–2016" },
+
+];
+
+// ── RENDERER — no need to edit below ────────────────────────
+
+function hl(authors) {
+  return authors.replace(/\[MOTA\]/g, '<span class="mota">Mota, J.A.</span>');
+}
+
+function link(p) {
+  if (p.pmid) return `<div class="paper-links"><a href="https://pubmed.ncbi.nlm.nih.gov/${p.pmid}/" target="_blank">PubMed</a></div>`;
+  if (p.doi)  return `<div class="paper-links"><a href="${p.doi}" target="_blank">DOI</a></div>`;
+  return '';
+}
+
+function build() {
+  const ip    = PUBS.filter(p => p.status === "inpress");
+  const years = [...new Set(PUBS.filter(p => p.status !== "inpress").map(p => p.status))].sort((a,b)=>b-a);
+  const total = PUBS.filter(p => p.status !== "inpress").length;
+
+  document.getElementById('stat-total').textContent   = total + '+';
+  document.getElementById('stat-inpress').textContent = ip.length;
+
+  let h = '';
+
+  // In Press
+  h += `<div class="year-group"><div class="section-header"><h2>In Press</h2><span class="section-count">${ip.length} accepted manuscripts</span></div>`;
+  ip.forEach((p,i) => {
+    h += `<div class="paper"><div class="paper-num">${ip.length-i}</div><div class="paper-body">
+      <div class="paper-title">${p.title} <span class="badge">Accepted</span></div>
+      <div class="paper-authors">${hl(p.authors)}</div>
+      <div class="paper-journal"><em>${p.journal}</em>${p.accepted?' · Accepted '+p.accepted:''}</div>
+      ${link(p)}${p.note?`<div class="paper-note">${p.note}</div>`:''}
+    </div></div>`;
+  });
+  h += '</div>';
+
+  // Year groups
+  let n = total;
+  years.forEach(yr => {
+    const g = PUBS.filter(p => p.status === yr);
+    h += `<div class="year-group"><div class="year-header"><span class="year-label">${yr}</span><div class="year-line"></div><span class="year-count">${g.length} publication${g.length!==1?'s':''}</span></div>`;
+    g.forEach(p => {
+      h += `<div class="paper"><div class="paper-num">${n--}</div><div class="paper-body">
+        <div class="paper-title">${p.title}</div>
+        <div class="paper-authors">${hl(p.authors)}</div>
+        <div class="paper-journal"><em>${p.journal}</em>${p.volume?' '+p.volume:''}${p.pmid?' · PMID: '+p.pmid:''}</div>
+        ${link(p)}${p.note?`<div class="paper-note">${p.note}</div>`:''}
+      </div></div>`;
+    });
+    h += '</div>';
+  });
+
+  document.getElementById('pub-list').innerHTML = h;
+}
+
+function reportHeight() {
+  const h = document.body.scrollHeight;
+  window.parent.postMessage({ frameHeight: h }, '*');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  build();
+  setTimeout(reportHeight, 100);
+  setTimeout(reportHeight, 600);
+  setTimeout(reportHeight, 1500);
+  window.addEventListener('resize', reportHeight);
+});
+</script>
+</head>
+<body>
+
+<header>
+  <div class="header-label">Neuromuscular &amp; Occupational Performance Laboratory · Texas Tech University</div>
+  <h1>Peer-Reviewed <span>Publications</span></h1>
+  <div class="header-meta">
+    Directed by Dr. Jacob A. Mota, Ph.D., CSCS*D &nbsp;·&nbsp; Department of Kinesiology &amp; Sport Management
+    &nbsp;·&nbsp; <a href="https://scholar.google.com/citations?user=95sUCQ8AAAAJ" target="_blank">Google Scholar</a>
+  </div>
+</header>
+
+<div class="stats">
+  <div class="stat"><span class="stat-num" id="stat-total">—</span><span class="stat-label">Publications</span></div>
+  <div class="stat"><span class="stat-num" id="stat-inpress">—</span><span class="stat-label">In Press</span></div>
+  <div class="stat"><span class="stat-num">879+</span><span class="stat-label">Citations</span></div>
+  <div class="stat"><span class="stat-num">2015–</span><span class="stat-label">Active Since</span></div>
+</div>
+
+<main>
+  <div id="pub-list"></div>
+  <div class="footnotes">
+    <p># denotes graduate student co-author &nbsp;·&nbsp; * denotes corresponding author</p>
+    <p style="margin-top:6px;">For current citation metrics see <a href="https://scholar.google.com/citations?user=95sUCQ8AAAAJ" target="_blank">Google Scholar</a>. Page last updated March 2026.</p>
+  </div>
+</main>
+
+<footer>
+  Neuromuscular &amp; Occupational Performance Laboratory · Texas Tech University · <a href="https://www.ttuneuroperformance.com" target="_blank">ttuneuroperformance.com</a>
+</footer>
+
+</body>
+</html>
