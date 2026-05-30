@@ -10,7 +10,7 @@
   :root { --red:#CC0000; --dark:#1a1a1a; --mid:#4a4a4a; --light:#f5f3ef; --rule:#d8d2c8; --ip:#7a5c00; --ip-bg:#fdf8ec; }
   * { box-sizing:border-box; margin:0; padding:0; }
   html, body { height:auto; overflow-y:auto; }
-  body { font-family:'DM Sans',sans-serif; background:var(--light); color:var(--dark); font-size:17px; line-height:1.65; }
+  body { font-family:'DM Sans',sans-serif; background:var(--light); color:var(--dark); font-size:18px; line-height:1.65; }
   header { background:var(--dark); color:white; padding:48px 40px 40px; border-bottom:4px solid var(--red); }
   .header-label { font-size:13px; letter-spacing:.2em; text-transform:uppercase; color:#999; margin-bottom:10px; }
   header h1 { font-family:'EB Garamond',serif; font-size:clamp(30px,4vw,44px); font-weight:500; line-height:1.2; margin-bottom:6px; }
@@ -35,9 +35,9 @@
   .paper:last-child { border-bottom:none; }
   .paper-num { font-family:'EB Garamond',serif; font-size:15px; color:#bbb; padding-top:2px; text-align:right; }
   .paper-title { font-family:'EB Garamond',serif; font-size:19px; font-weight:500; line-height:1.4; color:var(--dark); margin-bottom:5px; }
-  .paper-authors { font-size:15px; color:var(--mid); line-height:1.5; margin-bottom:4px; }
+  .paper-authors { font-size:16px; color:var(--mid); line-height:1.5; margin-bottom:4px; }
   .mota { font-weight:500; color:var(--dark); }
-  .paper-journal { font-size:15px; color:var(--mid); }
+  .paper-journal { font-size:16px; color:var(--mid); }
   .paper-journal em { font-family:'EB Garamond',serif; font-style:italic; color:var(--dark); }
   .paper-links { display:inline-flex; gap:8px; margin-top:6px; }
   .paper-links a { font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--red); text-decoration:none; border:1px solid var(--red); padding:3px 10px; border-radius:2px; }
@@ -76,11 +76,6 @@
 const PUBS = [
 
   // ── IN PRESS — newest accepted date first ────────────────
-  { status:"inpress", accepted:"March 19, 2026",
-    title:"Contributions from Impulse and Limb-Target Regulation to Schmidt's Linear Speed-Accuracy Tradeoff",
-    authors:"Blinch, J., Trovinger, C., Opdenaker, J., Clark, A.R., Gooch, C.E., Pankajkumar Joshi, H., Harry, J.R., & [MOTA]",
-    journal:"Journal of Motor Behavior" },
-
   { status:"inpress", accepted:"February 16, 2026",
     title:"Upper and Lower Body Isometric Strength Adaptations Following Two Consecutive 12-Week Resistance Training and Conditioning Programs in Male and Female Air Force ROTC Cadets: The Supporting Tactical Athletes for Readiness (STAR) Program",
     authors:"Brojanac, A.P., Haynes, H., [MOTA], Puleali'I, S., Schwarz, A.V., Johnson, M.F., Kaylor, M.G., Addison, A., Young, T., Klubertanz, M., Patton, M., & Graybeal, A.J.",
@@ -111,11 +106,6 @@ const PUBS = [
     authors:"Johnson, S.E., Gil, A., Conner, M.J., [MOTA], Dawes, J.J., Martin, S.E., & Gonzalez, D.E.",
     journal:"Journal of Occupational and Environmental Medicine" },
 
-  { status:"inpress", accepted:"October 15, 2025",
-    title:"Single vs. Whole Muscle Group Assessments: Does the Specific Muscle Influence Its Association with Performance?",
-    authors:"Velasquez, C.V., Wohlgemuth K.J., Hare, M.M., Southall K.E., & [MOTA]",
-    journal:"Topics in Exercise and Kinesiology" },
-
   { status:"inpress", accepted:"October 1, 2025",
     title:"SHIFT-48: Schedule and Health Improvements for Firefighters Transitioning to 48/96",
     authors:"Conner, M.J., Burnham, R., Jesko, A., Wohlgemuth, K.J., Miller, P., Boles, M., & [MOTA]",
@@ -126,7 +116,18 @@ const PUBS = [
     authors:"Wohlgemuth, K.J., Conner, M.J., Burnham, E., & [MOTA]",
     journal:"Journal of Strength and Conditioning Research" },
 
-  // ── 2025 ────────────────────────────────────────────────
+
+  // ── 2026 ────────────────────────────────────────────────
+  { status:"2026",
+    title:"Contributions from Impulse and Limb-Target Regulation to Schmidt's Linear Speed-Accuracy Tradeoff",
+    authors:"Blinch, J., Trovinger, C., Opdenaker, J., Clark, A.R., Gooch, C.E., Pankajkumar Joshi, H., Harry, J.R., & [MOTA]",
+    journal:"Journal of Motor Behavior", volume:"1–12", pmid:"41915458" },
+  // ── 2025 ──────────────────────────────────────────────
+
+  { status:"2025",
+    title:"Single vs. Whole Muscle Group Assessments: Does the Specific Muscle Influence Its Association with Performance?",
+    authors:"Velasquez, C.V., Wohlgemuth K.J., Hare, M.M., Southall K.E., & [MOTA]",
+    journal:"Topics in Exercise and Kinesiology", volume:"6(1)" },
   { status:"2025",
     title:"Using Repeated Vertical Jumps to Investigate the Relationship between Muscular Endurance and Balance",
     authors:"Stewart, M.J., Wohlgemuth, K.J., Southall, K.E., Velasquez, C.M., Park, S., Hite, M., Hare, M.H., [MOTA], & Harry, J.R.",
@@ -522,13 +523,13 @@ document.addEventListener('DOMContentLoaded', () => {
     Directed by Dr. Jacob A. Mota, Ph.D., CSCS*D &nbsp;·&nbsp; Department of Kinesiology &amp; Sport Management
     &nbsp;·&nbsp; <a href="https://scholar.google.com/citations?user=95sUCQ8AAAAJ" target="_blank">Google Scholar</a>
   </div>
-  <div class="last-updated">Last updated: March 2026</div>
+  <div class="last-updated">Last updated: May 2026</div>
 </header>
 
 <div class="stats">
   <div class="stat"><span class="stat-num" id="stat-total">—</span><span class="stat-label">Publications</span></div>
   <div class="stat"><span class="stat-num" id="stat-inpress">—</span><span class="stat-label">In Press</span></div>
-  <div class="stat"><span class="stat-num">1029+</span><span class="stat-label">Citations</span></div>
+  <div class="stat"><span class="stat-num">1042+</span><span class="stat-label">Citations</span></div>
   <div class="stat"><span class="stat-num">2015–</span><span class="stat-label">Active Since</span></div>
 </div>
 
@@ -536,7 +537,7 @@ document.addEventListener('DOMContentLoaded', () => {
   <div id="pub-list"></div>
   <div class="footnotes">
     <p># denotes graduate student co-author &nbsp;·&nbsp; * denotes corresponding author</p>
-    <p style="margin-top:6px;">For current citation metrics see <a href="https://scholar.google.com/citations?user=95sUCQ8AAAAJ" target="_blank">Google Scholar</a>. Page last updated March 2026.</p>
+    <p style="margin-top:6px;">For current citation metrics see <a href="https://scholar.google.com/citations?user=95sUCQ8AAAAJ" target="_blank">Google Scholar</a>. Page last updated May 2026.</p>
   </div>
 </main>
 
