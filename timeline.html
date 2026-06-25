@@ -238,11 +238,11 @@ function buildGantt(roster, pubList, confs) {
     if (outcome) parts.push(`<strong>Now:</strong> ${outcome}`);
     const pubs = pubsByName.get(name);
     if (pubs && pubs.length) {
-      parts.push(`<strong>Publications:</strong> ${pubs.length}`);
+      parts.push(`<strong>Peer-reviewed publications:</strong> ${pubs.length}`);
     }
     const confList = confsByName.get(name);
     if (confList && confList.length) {
-      parts.push(`<strong>Conferences:</strong> ${confList.length}`);
+      parts.push(`<strong>Conference presentation authorships:</strong> ${confList.length}`);
     }
     return parts.length ? "<br>" + parts.join("<br>") : "";
   }
