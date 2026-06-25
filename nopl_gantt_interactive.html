@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mota Lab (NOPL) Timeline</title>
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+  :root {
+    --pi: #cc0000;
+    --undergrad: #828A8F;
+    --ms: #9E1B32;
+    --phd: #7BAFD4;
+    --visiting: #EFE3B9;
+  }
+  body {
+    font-family: -apple-system, "Segoe UI", Arial, sans-serif;
+    margin: 0;
+    padding: 24px;
+    background: #ffffff;
+    color: #1a1a1a;
+  }
+  h1 {
+    text-align: center;
+    margin: 0 0 2px 0;
+    font-size: 22px;
+  }
+  h2 {
+    text-align: center;
+    margin: 0 0 18px 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: #444;
+  }
+  #status {
+    text-align: center;
+    color: #888;
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+  #chart-wrap, #pub-wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .bar {
+    stroke: #000;
+    stroke-width: 1;
+    cursor: pointer;
+  }
+  .bar.current {
+    opacity: 0.55;
+  }
+  .bar.dimmed {
+    opacity: 0.08 !important;
+  }
+  .axis text {
+    font-size: 11px;
+  }
+  .axis-label {
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .gridline {
+    stroke: #ddd;
+    stroke-dasharray: 3 3;
+  }
+  .ttu-line {
+    stroke: #777;
+    stroke-dasharray: 5 4;
+    stroke-width: 1.4;
+  }
+  .today-line {
+    stroke: #222;
+    stroke-dasharray: 1 3;
+    stroke-width: 1.4;
+  }
+  .tenure-line {
+    stroke: #9E1B32;
+    stroke-dasharray: 5 4;
+    stroke-width: 1.4;
+  }
+  .grad-label {
+    font-size: 11px;
+    font-weight: 700;
+  }
+  /* Unused now that labels get a solid white rect behind them (see
+     haloLabel() in the script) instead of a stroke halo. A stroke halo only
+     covers the ink of each glyph, so a line crossing the gap between two
+     digits (e.g. between the "0" and "2" in "2022") was still visible -
+     which is exactly what was happening with the year-gridlines and the
+     TTU/today/tenure reference lines. Left here in case it's needed again. */
+  .halo-label {
+    paint-order: stroke fill;
+    stroke: #fff;
+    stroke-width: 3.2px;
+    stroke-linejoin: round;
+  }
+  .transition-dot {
+    fill: #000;
+  }
+  .legend-item {
+    cursor: pointer;
+    user-select: none;
+  }
+  .legend-item.off rect {
+    opacity: 0.25;
+  }
+  .legend-item.off text {
+    opacity: 0.4;
+  }
+  #tooltip {
+    position: absolute;
+    pointer-events: none;
+    background: rgba(20,20,20,0.92);
+    color: #fff;
+    padding: 8px 11px;
+    border-radius: 6px;
+    font-size: 12.5px;
+    line-height: 1.45;
+    max-width: 300px;
+    opacity: 0;
+    transition: opacity 0.1s;
+  }
+  #hint {
+    text-align: center;
+    font-size: 12px;
+    color: #999;
+    margin-top: 6px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Mota Lab (est. 2020)</h1>
+<h2>From UA (MAPL) &rarr; TTU (NOPL)</h2>
+<div id="status">Loading roster...</div>
+<div id="chart-wrap"><svg id="gantt"></svg></div>
+<div id="hint">Scroll/drag horizontally over the chart to zoom and pan the timeline. Click a legend swatch to isolate a role. Double-click to reset.<br>&#9651; current trainee (placed mid-bar; end date is projected) &middot; bold year = graduation &middot; bold name = current lab member</div>
+<div id="pub-wrap"><svg id="pubs"></svg></div>
+<div id="tooltip"></div>
+
+<script>
+const roleColors = {
+  "PI": "var(--pi)",
+  "Undergrad": "var(--undergrad)",
+  "MS": "var(--ms)",
+  "PhD": "var(--phd)",
+  "Visiting Scholar": "var(--visiting)"
+};
+const roleColorsResolved = {
+  "PI": "#cc0000",
+  "Undergrad": "#828A8F",
+  "MS": "#9E1B32",
+  "PhD": "#7BAFD4",
+  "Visiting Scholar": "#EFE3B9"
+};
+const roleOrder = ["PI", "Undergrad", "MS", "PhD", "Visiting Scholar"];
+
+const tooltip = d3.select("#tooltip");
+const TTU_DATE = new Date(2022, 6, 1);
+const TENURE_DATE = new Date(2026, 8, 1); // Associate Professor with Tenure
+
+async function loadWorkbook() {
+  const res = await fetch("NOPL_Lab_Roster.xlsx");
+  if (!res.ok) throw new Error("fetch failed: " + res.status);
+  const buf = await res.arrayBuffer();
+  const wb = XLSX.read(buf, { type: "array", cellDates: true });
+  const sheetJson = (name) =>
+    wb.Sheets[name] ? XLSX.utils.sheet_to_json(wb.Sheets[name], { raw: true, defval: null }) : [];
+  const roster = sheetJson("Roster");
+  const pubs = sheetJson("Publications");
+  // Both optional/additive sheets for the hover tooltip - fine if empty or
+  // not yet present in an older copy of the workbook.
+  const pubList = sheetJson("Publication List");
+  const confs = sheetJson("Conferences");
+  return { roster, pubs, pubList, confs };
+}
+
+function buildGantt(roster, pubList, confs) {
+  const data = roster.map(d => ({
+    name: d.Name,
+    role: d.Role,
+    start: d.StartDate instanceof Date ? d.StartDate : new Date(d.StartDate),
+    end: d.EndDate instanceof Date ? d.EndDate : (d.EndDate ? new Date(d.EndDate) : null),
+    status: d.Status,
+    notes: d.Notes || "",
+    outcome: d.Outcome || null
+  }));
+
+  const today = new Date();
+  const allDates = data.flatMap(d => [d.start, d.end]).filter(Boolean);
+  const domainStart = d3.min([d3.min(allDates), new Date(2020, 7, 1)]);
+  const domainEndCandidate = d3.max([...allDates, today]);
+  const domainEnd = new Date(domainEndCandidate.getTime() + 1000 * 60 * 60 * 24 * 75);
+
+  // Tie-break by name alphabetically when two people start on the same date.
+  // This matches the R script: dplyr's group_by()+summarise() sorts groups
+  // by the grouping key (Name) rather than original row order, so without
+  // this tie-break the two charts can show people in a different order.
+  const byName = d3.group(data, d => d.name);
+
+  // Full stint history per person (sorted), and per-person publication /
+  // conference detail for the hover tooltip. pubList and confs are optional
+  // sheets - both come back as [] if the person hasn't been tagged in them
+  // yet, so this degrades gracefully to just the base tooltip.
+  const stintsByName = new Map(
+    Array.from(byName, ([name, rows]) => [name, rows.slice().sort((a, b) => a.start - b.start)])
+  );
+  const pubsByName = new Map();
+  pubList.forEach(p => {
+    if (!p.Title) return;
+    // Semicolons, not commas - several roster names already contain a comma
+    // (e.g. "Todd Freeborn, PhD"), so commas can't double as the author
+    // separator without splitting a single person's name in two.
+    (p.Authors || "").split(";").map(s => s.trim()).filter(Boolean).forEach(name => {
+      if (!pubsByName.has(name)) pubsByName.set(name, []);
+      pubsByName.get(name).push({ year: p.Year, title: p.Title });
+    });
+  });
+  const confsByName = new Map();
+  confs.forEach(c => {
+    const name = (c.Name || "").trim();
+    if (!name || !c.Event) return;
+    if (!confsByName.has(name)) confsByName.set(name, []);
+    confsByName.get(name).push({ event: c.Event, year: c.Year, type: c.Type || "presentation" });
+  });
+
+  function tooltipExtra(name) {
+    const parts = [];
+    const stints = stintsByName.get(name) || [];
+    if (stints.length > 1) {
+      const history = stints
+        .map(s => `${s.role} (${d3.timeFormat("%b %Y")(s.start)}&ndash;${s.end ? d3.timeFormat("%b %Y")(s.end) : "present"})`)
+        .join(", ");
+      parts.push(`<strong>History:</strong> ${history}`);
+    }
+    const outcome = stints.length ? stints[stints.length - 1].outcome : null;
+    if (outcome) parts.push(`<strong>Now:</strong> ${outcome}`);
+    const pubs = pubsByName.get(name);
+    if (pubs && pubs.length) {
+      const shown = pubs.slice(0, 4).map(p => `${p.title} (${p.year})`).join("; ");
+      const more = pubs.length > 4 ? ` &hellip; +${pubs.length - 4} more` : "";
+      parts.push(`<strong>Publications (${pubs.length}):</strong> ${shown}${more}`);
+    }
+    const confList = confsByName.get(name);
+    if (confList && confList.length) {
+      const byType = d3.rollups(confList, v => v.length, c => c.type);
+      const summary = byType.map(([t, n]) => `${n} ${t}${n > 1 ? "s" : ""}`).join(", ");
+      parts.push(`<strong>Conferences (${confList.length}):</strong> ${summary}`);
+    }
+    return parts.length ? "<br>" + parts.join("<br>") : "";
+  }
+
+  const order = Array.from(byName, ([name, rows]) => ({
+    name,
+    isPI: rows.some(r => r.role === "PI"),
+    firstStart: d3.min(rows, r => r.start)
+  })).sort((a, b) => (b.isPI - a.isPI) || (a.firstStart - b.firstStart) || a.name.localeCompare(b.name))
+    .map(d => d.name);
+
+  const latest = Array.from(byName, ([name, rows]) => {
+    const sorted = rows.slice().sort((a, b) => b.start - a.start);
+    return sorted[0];
+  });
+
+  // Placed at the midpoint of the gap between stints (e.g. the summer
+  // between an undergrad role ending and a grad role starting), not right
+  // at the new stint's start date, since that reads as glued to the edge
+  // of the second bar rather than marking the break between the two.
+  const transitions = Array.from(byName, ([name, rows]) => {
+    if (rows.length < 2) return [];
+    const sorted = rows.slice().sort((a, b) => a.start - b.start);
+    const out = [];
+    for (let i = 1; i < sorted.length; i++) {
+      const prevEnd = sorted[i - 1].end;
+      const curStart = sorted[i].start;
+      const mid = prevEnd ? new Date((prevEnd.getTime() + curStart.getTime()) / 2) : curStart;
+      out.push({ name, date: mid });
+    }
+    return out;
+  }).flat();
+
+  // Left margin sized for the longest name on the roster ("Kornkoanok
+  // Sophonsakulrat") at the bold axis font weight, with some headroom so a
+  // future longer name doesn't get clipped again.
+  const longestNameWidth = d3.max(order, n => n.length) * 7.2;
+  const margin = { top: 30, right: 30, bottom: 36, left: Math.max(190, longestNameWidth + 20) };
+  const rowHeight = 30;
+  const height = order.length * rowHeight;
+  const width = 880;
+  const totalWidth = width + margin.left + margin.right;
+  const totalHeight = height + margin.top + margin.bottom;
+
+  const svg = d3.select("#gantt")
+    .attr("viewBox", [0, 0, totalWidth, totalHeight])
+    .attr("width", "100%")
+    .attr("height", totalHeight);
+  svg.selectAll("*").remove();
+
+  const clipId = "gantt-clip";
+  svg.append("defs").append("clipPath").attr("id", clipId)
+    .append("rect").attr("width", width).attr("height", height);
+
+  const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+
+  const y = d3.scaleBand().domain(order).range([0, height]).padding(0.32);
+  let x = d3.scaleTime().domain([domainStart, domainEnd]).range([0, width]);
+  const x0 = x.copy();
+  // Tracks whichever x-scale is currently in effect (rescaled by zoom/pan),
+  // so the hover lookup on zoomRect always tests against the visible scale.
+  let activeX = x;
+
+  function tooltipHtml(d) {
+    const endLabel = d.end ? d3.timeFormat("%b %Y")(d.end) : "ongoing";
+    const base = `<strong>${d.name}</strong><br>${d.role} &middot; ${d.status}<br>${d3.timeFormat("%b %Y")(d.start)} &ndash; ${endLabel}`;
+    // PI's bar spans the whole chart and his notes/pub/conference totals
+    // just duplicate what's on the CV and website - keep his tooltip to
+    // the name, role, and date range only.
+    if (d.role === "PI") return base;
+    return `${base}${d.notes ? "<br><em>" + d.notes + "</em>" : ""}${tooltipExtra(d.name)}`;
+  }
+
+  const xAxisG = g.append("g").attr("class", "axis").attr("transform", `translate(0,${height})`);
+  const gridG = g.append("g");
+  const plotG = g.append("g").attr("clip-path", `url(#${clipId})`);
+  // Reference lines (TTU transition, tenure date, today) and their labels
+  // live in their own unclipped group. plotG's clip-path is a rect starting
+  // at y=0, so the "TTU Transition"/"Tenured" labels - drawn at y=-12, just
+  // above the bars - were being cut off whenever they were appended there.
+  const refG = g.append("g");
+  const yAxisG = g.append("g").attr("class", "axis");
+
+  function clampDate(d) {
+    return d3.max([domainStart, d3.min([domainEnd, d])]);
+  }
+
+  // Draws text with a solid white rectangle behind it, sized to the actual
+  // rendered glyphs (via getBBox). This is the SVG equivalent of the
+  // R chart's white-filled geom_label() boxes. A stroke-based "halo" around
+  // each character isn't enough here because the gridlines/reference lines
+  // can pass through the gap between two letters (e.g. between digits in
+  // "2022") and still show up as visually crossing the label.
+  function haloLabel(parent, attrs, text) {
+    const t = parent.append("text").text(text);
+    Object.entries(attrs).forEach(([k, v]) => t.attr(k, v));
+    const bbox = t.node().getBBox();
+    parent.insert("rect", () => t.node())
+      .attr("x", bbox.x - 2)
+      .attr("y", bbox.y - 1)
+      .attr("width", bbox.width + 4)
+      .attr("height", bbox.height + 2)
+      .attr("fill", "#fff");
+    return t;
+  }
+
+  function render(xs) {
+    xAxisG.call(d3.axisBottom(xs).ticks(d3.timeYear.every(1)).tickFormat(d3.timeFormat("%Y")));
+    refG.selectAll("*").remove();
+
+    gridG.selectAll("line.gridline")
+      .data(xs.ticks(d3.timeYear.every(1)))
+      .join("line")
+      .attr("class", "gridline")
+      .attr("x1", d => xs(d)).attr("x2", d => xs(d))
+      .attr("y1", 0).attr("y2", height);
+
+    plotG.selectAll("*").remove();
+
+    plotG.selectAll("rect.bar")
+      .data(data)
+      .join("rect")
+      .attr("class", d => "bar role-" + d.role.replace(/\s+/g, "") + (d.status === "Current" ? " current" : ""))
+      .attr("x", d => xs(clampDate(d.start)))
+      .attr("y", d => y(d.name))
+      .attr("width", d => Math.max(1, xs(clampDate(d.end || domainEnd)) - xs(clampDate(d.start))))
+      .attr("height", y.bandwidth())
+      .attr("fill", d => roleColorsResolved[d.role] || "#999");
+    // Hover is handled by zoomRect below, not here - zoomRect sits on top
+    // of these bars (it has to, to catch drag/scroll for zoom/pan anywhere
+    // on the chart) and would otherwise swallow mousemove before it ever
+    // reaches a bar.
+    activeX = xs;
+
+    plotG.selectAll("circle.transition-dot")
+      .data(transitions)
+      .join("circle")
+      .attr("class", "transition-dot")
+      .attr("cx", d => xs(clampDate(d.date)))
+      .attr("cy", d => y(d.name) + y.bandwidth() / 2)
+      .attr("r", 3.2);
+
+    // Mid-bar, not end-of-bar: an arrow sitting right at the bar's tip reads
+    // as a finish line, which is misleading for an open/projected end date.
+    plotG.selectAll("path.current-marker")
+      .data(latest.filter(d => d.status === "Current" && d.role !== "PI"))
+      .join("path")
+      .attr("class", "current-marker")
+      .attr("d", d3.symbol().type(d3.symbolTriangle).size(60))
+      .attr("transform", d => {
+        const endClamped = clampDate(d.end || domainEnd);
+        const midDate = new Date((d.start.getTime() + endClamped.getTime()) / 2);
+        const px = xs(midDate);
+        const py = y(d.name) + y.bandwidth() / 2;
+        return `translate(${px},${py}) rotate(180)`;
+      })
+      .attr("fill", "#fff").attr("stroke", "#000").attr("stroke-width", 1.3);
+
+    latest
+      .filter(d => d.status === "Graduated" && d.role !== "PI" && d.end)
+      .forEach(d => {
+        haloLabel(plotG, {
+          class: "grad-label",
+          x: xs(clampDate(d.end)) + 6,
+          y: y(d.name) + y.bandwidth() / 2 + 4
+        }, d3.timeFormat("%Y")(d.end));
+      });
+
+    if (xs(TTU_DATE) >= 0 && xs(TTU_DATE) <= width) {
+      refG.append("line").attr("class", "ttu-line")
+        .attr("x1", xs(TTU_DATE)).attr("x2", xs(TTU_DATE)).attr("y1", -8).attr("y2", height);
+      haloLabel(refG, {
+        x: xs(TTU_DATE), y: -12, "text-anchor": "middle",
+        "font-weight": 700, "font-size": 11
+      }, "TTU Transition");
+    }
+    if (xs(TENURE_DATE) >= 0 && xs(TENURE_DATE) <= width) {
+      refG.append("line").attr("class", "tenure-line")
+        .attr("x1", xs(TENURE_DATE)).attr("x2", xs(TENURE_DATE)).attr("y1", -8).attr("y2", height);
+      haloLabel(refG, {
+        x: xs(TENURE_DATE), y: -12, "text-anchor": "middle",
+        "font-weight": 700, "font-size": 11, fill: "#9E1B32"
+      }, "Tenured");
+    }
+    const todayX = xs(today);
+    if (todayX >= 0 && todayX <= width) {
+      refG.append("line").attr("class", "today-line")
+        .attr("x1", todayX).attr("x2", todayX).attr("y1", 0).attr("y2", height);
+    }
+  }
+
+  const currentNames = new Set(latest.filter(d => d.status === "Current").map(d => d.name));
+
+  yAxisG.call(d3.axisLeft(y));
+  yAxisG.selectAll("text")
+    .attr("font-size", 11.5)
+    .attr("font-weight", d => currentNames.has(d) ? 700 : 400);
+
+  render(x);
+
+  const zoom = d3.zoom()
+    .scaleExtent([0.6, 12])
+    .translateExtent([[0, 0], [width, 0]])
+    .extent([[0, 0], [width, 0]])
+    .on("zoom", (event) => render(event.transform.rescaleX(x0)));
+
+  const zoomRect = g.append("rect")
+    .attr("x", 0).attr("y", 0)
+    .attr("width", width).attr("height", height)
+    .attr("fill", "transparent")
+    .call(zoom)
+    .on("dblclick.zoom", () => zoomRect.call(zoom.transform, d3.zoomIdentity))
+    .on("mousemove", (event) => {
+      // zoomRect sits on top of the bars (it has to, to catch drag/scroll
+      // anywhere on the chart), so figure out which row and which bar the
+      // cursor is over by inverting the scales ourselves, rather than
+      // relying on the bars' own mouse events, which never fire.
+      const [mx, my] = d3.pointer(event, g.node());
+      const name = order.find(n => {
+        const top = y(n);
+        return top !== undefined && my >= top && my <= top + y.bandwidth();
+      });
+      if (!name) { tooltip.style("opacity", 0); return; }
+      const hoverDate = activeX.invert(mx);
+      const d = data.find(r => r.name === name && hoverDate >= r.start && hoverDate <= (r.end || domainEnd));
+      if (!d) { tooltip.style("opacity", 0); return; }
+      tooltip
+        .style("opacity", 1)
+        .style("left", (event.pageX + 14) + "px")
+        .style("top", (event.pageY - 10) + "px")
+        .html(tooltipHtml(d));
+    })
+    .on("mouseleave", () => tooltip.style("opacity", 0));
+
+  // Legend with toggle-to-isolate
+  const legend = svg.append("g").attr("transform", `translate(${margin.left}, ${totalHeight - 6})`);
+  let activeRole = null;
+  const items = legend.selectAll("g.legend-item")
+    .data(roleOrder)
+    .join("g")
+    .attr("class", "legend-item")
+    .attr("transform", (d, i) => `translate(${i * 150}, 0)`)
+    .on("click", (event, role) => {
+      activeRole = activeRole === role ? null : role;
+      d3.selectAll(".bar").classed("dimmed", d => false);
+      if (activeRole) {
+        plotG.selectAll("rect.bar").classed("dimmed", d => d.role !== activeRole);
+      }
+      legend.selectAll("g.legend-item").classed("off", d => activeRole && d !== activeRole);
+    });
+
+  items.append("rect").attr("width", 14).attr("height", 14).attr("y", -11)
+    .attr("fill", d => roleColorsResolved[d]).attr("stroke", "#000");
+  items.append("text").attr("x", 19).attr("y", 0).attr("font-size", 12).text(d => d);
+}
+
+function buildPubs(pubs) {
+  const data = pubs.map(d => ({ year: d.Year, count: d.Count }))
+    .sort((a, b) => a.year - b.year);
+  let cum = 0;
+  data.forEach(d => { cum += d.count; d.cumulative = cum; });
+
+  const margin = { top: 36, right: 50, bottom: 36, left: 50 };
+  const width = 880, height = 220;
+  const totalWidth = width + margin.left + margin.right;
+  const totalHeight = height + margin.top + margin.bottom;
+
+  const svg = d3.select("#pubs")
+    .attr("viewBox", [0, 0, totalWidth, totalHeight])
+    .attr("width", "100%").attr("height", totalHeight);
+  svg.selectAll("*").remove();
+
+  svg.append("text").attr("x", totalWidth / 2).attr("y", 20)
+    .attr("text-anchor", "middle").attr("font-weight", 700).attr("font-size", 14)
+    .text("Lab Publications per Year");
+
+  const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+
+  const x = d3.scaleBand().domain(data.map(d => d.year)).range([0, width]).padding(0.35);
+  const yLeft = d3.scaleLinear().domain([0, d3.max(data, d => d.count) * 1.2]).range([height, 0]);
+  const yRight = d3.scaleLinear().domain([0, d3.max(data, d => d.cumulative) * 1.1]).range([height, 0]);
+
+  g.append("g").attr("transform", `translate(0,${height})`).call(d3.axisBottom(x).tickFormat(d3.format("d")));
+  g.append("g").call(d3.axisLeft(yLeft));
+  g.append("g").attr("transform", `translate(${width},0)`).call(d3.axisRight(yRight))
+    .attr("color", "#9E1B32");
+
+  g.selectAll("rect.pub-bar")
+    .data(data).join("rect")
+    .attr("x", d => x(d.year)).attr("width", x.bandwidth())
+    .attr("y", d => yLeft(d.count)).attr("height", d => height - yLeft(d.count))
+    .attr("fill", "#7BAFD4").attr("stroke", "#000");
+
+  g.selectAll("text.pub-count")
+    .data(data).join("text")
+    .attr("x", d => x(d.year) + x.bandwidth() / 2).attr("y", d => yLeft(d.count) - 6)
+    .attr("text-anchor", "middle").attr("font-weight", 700).attr("font-size", 11)
+    .text(d => d.count);
+
+  const line = d3.line().x(d => x(d.year) + x.bandwidth() / 2).y(d => yRight(d.cumulative));
+  g.append("path").datum(data).attr("d", line).attr("fill", "none")
+    .attr("stroke", "#9E1B32").attr("stroke-width", 2.5);
+  g.selectAll("circle.pub-cum")
+    .data(data).join("circle")
+    .attr("cx", d => x(d.year) + x.bandwidth() / 2).attr("cy", d => yRight(d.cumulative))
+    .attr("r", 3.5).attr("fill", "#9E1B32");
+}
+
+loadWorkbook()
+  .then(({ roster, pubs, pubList, confs }) => {
+    d3.select("#status").style("display", "none");
+    buildGantt(roster, pubList, confs);
+    buildPubs(pubs);
+  })
+  .catch(err => {
+    d3.select("#status")
+      .style("color", "#b00")
+      .text("Could not load NOPL_Lab_Roster.xlsx (" + err.message + "). Serve this page and the xlsx file from the same folder over http(s) — most browsers block direct file:// fetches.");
+    console.error(err);
+  });
+</script>
+</body>
+</html>
