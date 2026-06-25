@@ -184,7 +184,9 @@ function buildGantt(roster, pubList, confs) {
     end: d.EndDate instanceof Date ? d.EndDate : (d.EndDate ? new Date(d.EndDate) : null),
     status: d.Status,
     notes: d.Notes || "",
-    outcome: d.Outcome || null
+    awards: d.Awards || "",
+    now: d.Now || null,
+    thesisTitle: d["Thesis/Dissertation Title"] || null
   }));
 
   const today = new Date();
@@ -225,22 +227,40 @@ function buildGantt(roster, pubList, confs) {
     confsByName.get(name).push({ event: c.Event, year: c.Year, type: c.Type || "presentation" });
   });
 
-  function tooltipExtra(name) {
+  function tooltipExtra(d) {
     const parts = [];
-    const stints = stintsByName.get(name) || [];
+    const stints = stintsByName.get(d.name) || [];
     if (stints.length > 1) {
       const history = stints
         .map(s => `${s.role} (${d3.timeFormat("%b %Y")(s.start)}&ndash;${s.end ? d3.timeFormat("%b %Y")(s.end) : "present"})`)
         .join(", ");
       parts.push(`<strong>History:</strong> ${history}`);
     }
-    const outcome = stints.length ? stints[stints.length - 1].outcome : null;
-    if (outcome) parts.push(`<strong>Now:</strong> ${outcome}`);
-    const pubs = pubsByName.get(name);
+    // "Now" reflects where the person ended up after the lab (or their
+    // current title if still here), and is a property of the person's
+    // latest stint regardless of which of their bars is being hovered.
+    const now = stints.length ? stints[stints.length - 1].now : null;
+    if (now) parts.push(`<strong>Now:</strong> ${now}`);
+    // Thesis/dissertation title belongs to this specific stint (the role
+    // hovered), since an undergrad stint never has one but the MS/PhD
+    // stint that followed it might.
+    if (d.thesisTitle) {
+      const label = d.role === "PhD" ? "Dissertation" : "Thesis";
+      parts.push(`<strong>${label}:</strong> ${d.thesisTitle}`);
+    }
+    // Awards/funding list, with unfunded grant applications kept in the
+    // spreadsheet for the record but skipped here so the public-facing
+    // tooltip only shows awards actually received.
+    if (d.awards) {
+      const funded = d.awards.split(";").map(s => s.trim()).filter(Boolean)
+        .filter(a => !/\(unfunded/i.test(a));
+      if (funded.length) parts.push(`<strong>Awards/funding:</strong> ${funded.join("; ")}`);
+    }
+    const pubs = pubsByName.get(d.name);
     if (pubs && pubs.length) {
       parts.push(`<strong>Peer-reviewed publications:</strong> ${pubs.length}`);
     }
-    const confList = confsByName.get(name);
+    const confList = confsByName.get(d.name);
     if (confList && confList.length) {
       parts.push(`<strong>Conference presentation authorships:</strong> ${confList.length}`);
     }
@@ -313,7 +333,7 @@ function buildGantt(roster, pubList, confs) {
     // just duplicate what's on the CV and website - keep his tooltip to
     // the name, role, and date range only.
     if (d.role === "PI") return base;
-    return `${base}${d.notes ? "<br><em>" + d.notes + "</em>" : ""}${tooltipExtra(d.name)}`;
+    return `${base}${d.notes ? "<br><em>" + d.notes + "</em>" : ""}${tooltipExtra(d)}`;
   }
 
   const xAxisG = g.append("g").attr("class", "axis").attr("transform", `translate(0,${height})`);
