@@ -135,7 +135,7 @@
 <h2>From UA (MAPL) &rarr; TTU (NOPL)</h2>
 <div id="status">Loading roster...</div>
 <div id="chart-wrap"><svg id="gantt"></svg></div>
-<div id="hint">Scroll/drag horizontally over the chart to zoom and pan the timeline. Click a legend swatch to isolate a role. Double-click to reset.<br>&#9651; current trainee (placed mid-bar; end date is projected) &middot; bold year = graduation &middot; bold name = current lab member</div>
+<div id="hint">Drag horizontally over the chart to pan the timeline. Click a legend swatch to isolate a role. Double-click to reset.<br>&#9651; current trainee (placed mid-bar; end date is projected) &middot; bold year = graduation &middot; bold name = current lab member</div>
 <div id="pub-wrap"><svg id="pubs"></svg></div>
 <div id="tooltip"></div>
 
@@ -448,6 +448,7 @@ function buildGantt(roster, pubList, confs) {
   render(x);
 
   const zoom = d3.zoom()
+    .filter((event) => event.type !== "wheel")
     .scaleExtent([0.6, 12])
     .translateExtent([[0, 0], [width, 0]])
     .extent([[0, 0], [width, 0]])
