@@ -238,15 +238,11 @@ function buildGantt(roster, pubList, confs) {
     if (outcome) parts.push(`<strong>Now:</strong> ${outcome}`);
     const pubs = pubsByName.get(name);
     if (pubs && pubs.length) {
-      const shown = pubs.slice(0, 4).map(p => `${p.title} (${p.year})`).join("; ");
-      const more = pubs.length > 4 ? ` &hellip; +${pubs.length - 4} more` : "";
-      parts.push(`<strong>Publications (${pubs.length}):</strong> ${shown}${more}`);
+      parts.push(`<strong>Publications:</strong> ${pubs.length}`);
     }
     const confList = confsByName.get(name);
     if (confList && confList.length) {
-      const byType = d3.rollups(confList, v => v.length, c => c.type);
-      const summary = byType.map(([t, n]) => `${n} ${t}${n > 1 ? "s" : ""}`).join(", ");
-      parts.push(`<strong>Conferences (${confList.length}):</strong> ${summary}`);
+      parts.push(`<strong>Conferences:</strong> ${confList.length}`);
     }
     return parts.length ? "<br>" + parts.join("<br>") : "";
   }
