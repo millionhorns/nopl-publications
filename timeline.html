@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mota Lab (NOPL) Timeline</title>
 <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -108,9 +109,21 @@
   .legend-item.off text {
     opacity: 0.4;
   }
+  #hint {
+    text-align: center;
+    font-size: 12px;
+    color: #999;
+    margin-top: 6px;
+  }
+  #updated {
+    text-align: center;
+    font-size: 11px;
+    color: #bbb;
+    margin-top: 4px;
+  }
+  /* Desktop tooltip: follows cursor */
   #tooltip {
     position: absolute;
-    pointer-events: none;
     background: rgba(20,20,20,0.92);
     color: #fff;
     padding: 8px 11px;
@@ -120,12 +133,31 @@
     max-width: 300px;
     opacity: 0;
     transition: opacity 0.1s;
+    pointer-events: none;
   }
-  #hint {
-    text-align: center;
-    font-size: 12px;
-    color: #999;
-    margin-top: 6px;
+  /* Mobile tooltip: fixed at bottom of screen, tap-dismissable */
+  @media (max-width: 700px) {
+    #tooltip {
+      position: fixed;
+      bottom: 16px;
+      left: 12px;
+      right: 12px;
+      max-width: none;
+      pointer-events: auto;
+      font-size: 13px;
+      z-index: 999;
+    }
+    #tooltip-close {
+      float: right;
+      font-size: 16px;
+      line-height: 1;
+      cursor: pointer;
+      color: #ccc;
+      margin-left: 8px;
+    }
+  }
+  @media (min-width: 701px) {
+    #tooltip-close { display: none; }
   }
 </style>
 </head>
@@ -135,9 +167,10 @@
 <h2>From UA (MAPL) &rarr; TTU (NOPL)</h2>
 <div id="status">Loading roster...</div>
 <div id="chart-wrap"><svg id="gantt"></svg></div>
-<div id="hint">Drag horizontally over the chart to pan the timeline. Click a legend swatch to isolate a role. Double-click to reset.<br>&#9651; current trainee (placed mid-bar; end date is projected) &middot; bold year = graduation &middot; bold name = current lab member</div>
+<div id="hint">Drag horizontally over the chart to pan the timeline. Click a legend swatch to isolate a role. Double-click to reset.<br>&#9651; current trainee (placed mid-bar; end date is projected) &middot; bold year = graduation &middot; bold name = current lab member<br><span id="mobile-hint" style="display:none">Tap a bar to see details.</span></div>
+<div id="updated"></div>
 <div id="pub-wrap"><svg id="pubs"></svg></div>
-<div id="tooltip"></div>
+<div id="tooltip"><span id="tooltip-close">&#10005;</span><span id="tooltip-body"></span></div>
 
 <script>
 const roleColors = {
@@ -160,9 +193,25 @@ const tooltip = d3.select("#tooltip");
 const TTU_DATE = new Date(2022, 6, 1);
 const TENURE_DATE = new Date(2026, 8, 1); // Associate Professor with Tenure
 
+// Show mobile hint if touch-primary device
+if (window.matchMedia("(pointer: coarse)").matches) {
+  document.getElementById("mobile-hint").style.display = "inline";
+}
+
+// Dismiss tooltip on close button (mobile)
+document.getElementById("tooltip-close").addEventListener("click", () => {
+  tooltip.style("opacity", 0);
+});
+
 async function loadWorkbook() {
   const res = await fetch("NOPL_Lab_Roster.xlsx");
   if (!res.ok) throw new Error("fetch failed: " + res.status);
+  const lastMod = res.headers.get("last-modified");
+  if (lastMod) {
+    const d = new Date(lastMod);
+    const fmt = d.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+    document.getElementById("updated").textContent = "Roster last updated: " + fmt;
+  }
   const buf = await res.arrayBuffer();
   const wb = XLSX.read(buf, { type: "array", cellDates: true });
   const sheetJson = (name) =>
@@ -490,13 +539,46 @@ function buildGantt(roster, pubList, confs) {
       const hoverDate = activeX.invert(mx);
       const d = data.find(r => r.name === name && hoverDate >= r.start && hoverDate <= (r.end || domainEnd));
       if (!d) { tooltip.style("opacity", 0); return; }
+      d3.select("#tooltip-body").html(tooltipHtml(d));
       tooltip
         .style("opacity", 1)
         .style("left", (event.pageX + 14) + "px")
-        .style("top", (event.pageY - 10) + "px")
-        .html(tooltipHtml(d));
+        .style("top", (event.pageY - 10) + "px");
     })
     .on("mouseleave", () => tooltip.style("opacity", 0));
+
+  // Touch support: tap (no significant movement) shows tooltip fixed at bottom.
+  // Pan/drag still works via D3 zoom's own touch handling.
+  let touchOrigin = null;
+  let touchDatum = null;
+  zoomRect
+    .on("touchstart.tooltip", (event) => {
+      const touch = event.touches[0];
+      touchOrigin = { x: touch.clientX, y: touch.clientY };
+      const [mx, my] = d3.pointer(event, g.node());
+      const name = order.find(n => {
+        const top = y(n);
+        return top !== undefined && my >= top && my <= top + y.bandwidth();
+      });
+      if (!name) { touchDatum = null; return; }
+      const hoverDate = activeX.invert(mx);
+      touchDatum = data.find(r => r.name === name && hoverDate >= r.start && hoverDate <= (r.end || domainEnd)) || null;
+    }, { passive: true })
+    .on("touchmove.tooltip", (event) => {
+      if (!touchOrigin) return;
+      const touch = event.touches[0];
+      if (Math.abs(touch.clientX - touchOrigin.x) > 6 || Math.abs(touch.clientY - touchOrigin.y) > 6) {
+        touchDatum = null; // moved too far — it's a pan, not a tap
+      }
+    }, { passive: true })
+    .on("touchend.tooltip", () => {
+      if (touchDatum) {
+        d3.select("#tooltip-body").html(tooltipHtml(touchDatum));
+        tooltip.style("opacity", 1).style("left", null).style("top", null);
+      }
+      touchOrigin = null;
+      touchDatum = null;
+    }, { passive: true });
 
   // Legend with toggle-to-isolate
   const legend = svg.append("g").attr("transform", `translate(${margin.left}, ${totalHeight - 6})`);
